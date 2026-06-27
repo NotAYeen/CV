@@ -32,7 +32,26 @@ h1, h2, h3 {
 .main-header {
     margin-bottom: 40px;
     padding-bottom: 30px;
-    border-bottom: 2px solid var(--border-color);
+    position: relative;
+}
+
+.main-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #111115, var(--accent-blue), #8b5cf6, #111115);
+    background-size: 300% 100%;
+    animation: gradientMove 4s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 .huge-title {
     font-size: clamp(3rem, 5vw, 5rem);
@@ -165,7 +184,6 @@ h1, h2, h3 {
 /* Special styling for Profile Box to stand out */
 .profile-box { 
     grid-column: span 7; 
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(230, 240, 255, 0.4));
     border-color: rgba(37, 99, 235, 0.4);
     box-shadow: 0 10px 40px rgba(37, 99, 235, 0.1);
 }
@@ -196,7 +214,7 @@ h1, h2, h3 {
     grid-template-columns: 1fr 1fr;
     gap: 15px;
 }
-.contact-card.location {
+.contact-card:last-child:nth-child(odd) {
     grid-column: span 2;
 }
 .contact-card {
@@ -209,7 +227,7 @@ h1, h2, h3 {
     color: var(--text-main);
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
-    background: var(--bg-page);
+    background: rgba(255, 255, 255, 0.3);
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -234,12 +252,21 @@ h1, h2, h3 {
     transition: transform 0.3s ease;
 }
 .contact-card:hover { color: #fff; border-color: transparent; }
-.contact-card:hover i { transform: scale(1.2); }
+.contact-card:hover i { 
+    animation: float-icon 1.5s ease-in-out infinite;
+}
+
+@keyframes float-icon {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+    100% { transform: translateY(0); }
+}
 .contact-card:hover::before { transform: scaleY(1); }
 .contact-card.email::before { background: #000000; }
-.contact-card.phone::before { background: #10b981; }
 .contact-card.github::before { background: #171515; }
 .contact-card.location::before { background: var(--accent-blue); }
+.contact-card.experience::before { background: #f59e0b; }
+.contact-card.availability::before { background: #10b981; }
 .timeline-container {
     display: flex;
     flex-direction: column;
@@ -249,11 +276,11 @@ h1, h2, h3 {
     padding: 20px;
     border-radius: 16px;
     border: 1px solid var(--border-color);
-    background: var(--bg-page);
+    background: rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
 }
 .timeline-card:hover {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.6);
     border-color: var(--accent-blue);
     transform: translateX(5px);
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
@@ -443,12 +470,12 @@ h1, h2, h3 {
 }
 .slide-down { animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .pop-in { opacity: 0; animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
-.delay-6 { animation-delay: 0.6s; }
+.bento-item.delay-1 { animation-delay: 0.05s; }
+.bento-item.delay-2 { animation-delay: 0.1s; }
+.bento-item.delay-3 { animation-delay: 0.15s; }
+.bento-item.delay-4 { animation-delay: 0.2s; }
+.bento-item.delay-5 { animation-delay: 0.25s; }
+.bento-item.delay-6 { animation-delay: 0.3s; }
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-30px); }
     to { opacity: 1; transform: translateY(0); }
@@ -526,4 +553,42 @@ h1, h2, h3 {
         transform: scale(4);
         opacity: 0;
     }
+}
+
+/* =========================================
+   ANIMATED BORDER TRACER (HOVER)
+   ========================================= */
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.bento-item::after, .contact-card::after, .timeline-card::after {
+    content: '';
+    position: absolute;
+    inset: -2px; /* 2px border thickness */
+    border-radius: inherit;
+    background: conic-gradient(from var(--angle), transparent 0%, transparent 75%, var(--accent-blue) 95%, #ffffff 100%);
+    z-index: 0; 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 2px;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.bento-item:hover::after, .contact-card:hover::after, .timeline-card:hover::after {
+    opacity: 1;
+    animation: spin-angle 2s linear infinite;
+}
+
+@keyframes spin-angle {
+    to { --angle: 360deg; }
+}
+
+.bento-item:hover, .timeline-card:hover {
+    border-color: transparent;
 }
